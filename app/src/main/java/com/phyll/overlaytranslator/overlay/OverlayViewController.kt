@@ -216,15 +216,61 @@ class OverlayViewController(
         val inflater = LayoutInflater.from(themedContext)
         panelView = inflater.inflate(R.layout.overlay_panel, null)
 
+        val metrics = context.resources.displayMetrics
+        val panelWidth = (metrics.widthPixels * 0.94f).toInt().coerceAtMost(dpToPx(420f).toInt())
+
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
+            panelWidth,
+            WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.CENTER
-            dimAmount = 0.4f
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            x = 0
+            y = (bubbleY - dpToPx(30f)).toInt().coerceIn(dpToPx(40f).toInt(), (metrics.heightPixels * 0.45f).toInt())
+        }
+
+        // Tap outside to collapse back to bubble
+        panelView?.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_OUTSIDE) {
+                collapse()
+                true
+            } else {
+                false
+            }
+        }
+
+        // Draggable floating header
+        val layoutHeader = panelView?.findViewById<View>(R.id.layoutHeader)
+        var downX = 0f
+        var downY = 0f
+        layoutHeader?.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = event.rawX
+                    downY = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.rawX - downX
+                    val dy = event.rawY - downY
+                    params.x += dx.toInt()
+                    params.y += dy.toInt()
+                    try {
+                        windowManager.updateViewLayout(panelView, params)
+                    } catch (_: Exception) {}
+                    downX = event.rawX
+                    downY = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    v.performClick()
+                    true
+                }
+                else -> false
+            }
         }
 
         setupPanel(panelView!!)
@@ -713,16 +759,16 @@ class OverlayViewController(
                         }
 
                         val analysisText = when {
+                            result.analysis.isNotBlank() && result.phonetics.isNotBlank() -> "🗣 Phiên âm: ${result.phonetics}\n\n${result.analysis}"
                             result.analysis.isNotBlank() -> result.analysis
-                            result.phonetics.isNotBlank() -> "🔊 PHIÊN ÂM:\n${result.phonetics}"
+                            result.phonetics.isNotBlank() -> "🗣 Phiên âm: ${result.phonetics}"
                             else -> ""
                         }
 
-                        if (analysisText.isNotBlank()) {
-                            txtAnalysis.text = analysisText
-                            lblAnalysisHeader.visibility = View.VISIBLE
-                            txtAnalysis.visibility = View.VISIBLE
-                        }
+                        txtAnalysis.text = analysisText
+                        lblAnalysisHeader.visibility = View.VISIBLE
+                        lblAnalysisHeader.text = "💡 Xem giải thích & ngữ pháp ▼"
+                        txtAnalysis.visibility = View.GONE
 
                         if (autoCopyResult) {
                             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -818,7 +864,46 @@ class OverlayViewController(
 
         btnCollapse.setOnClickListener { collapse() }
 
-        scrim.setOnClickListener { collapse() }
+        lblAnalysisHeader.setOnClickListener {
+            if (txtAnalysis.visibility == View.VISIBLE) {
+                txtAnalysis.visibility = View.GONE
+                lblAnalysisHeader.text = "💡 Xem giải thích & ngữ pháp ▼"
+            } else {
+                val currentText = inputSource.text.toString().trim()
+                val currentTrans = txtResult.text.toString().trim()
+                val targetLang = langSelector.text.toString().trim()
+
+                if (txtAnalysis.text.isBlank() && currentText.isNotEmpty() && currentTrans.isNotEmpty()) {
+                    lblAnalysisHeader.text = "⏳ Đang phân tích ngữ pháp..."
+                    scope.launch {
+                        try {
+                            val analysis = geminiClient.analyzeGrammar(
+                                text = currentText,
+                                translation = currentTrans,
+                                targetLang = targetLang,
+                                apiKey = settings.apiKey,
+                                model = settings.model
+                            )
+                            if (analysis.isNotBlank()) {
+                                txtAnalysis.text = analysis
+                                txtAnalysis.visibility = View.VISIBLE
+                                lblAnalysisHeader.text = "💡 Thu gọn giải thích ▲"
+                            } else {
+                                lblAnalysisHeader.text = "💡 Xem giải thích & ngữ pháp ▼"
+                            }
+                        } catch (e: Exception) {
+                            lblAnalysisHeader.text = "💡 Xem giải thích & ngữ pháp ▼"
+                            Toast.makeText(themedContext, "Lỗi phân tích: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    txtAnalysis.visibility = View.VISIBLE
+                    lblAnalysisHeader.text = "💡 Thu gọn giải thích ▲"
+                }
+            }
+        }
+
+        scrim?.setOnClickListener { collapse() }
 
         btnSettings.setOnClickListener {
             collapse()

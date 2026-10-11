@@ -2,143 +2,161 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <!-- Scrim: tap outside to collapse -->
+    <!-- Compatibility stub for scrim (non-blocking) -->
     <View
         android:id="@+id/scrim"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="32dp"
+        android:layout_gravity="top|center_horizontal"
         app:cardBackgroundColor="?attr/cardBackgroundColor"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="12dp">
+        app:cardCornerRadius="18dp"
+        app:cardElevation="10dp"
+        app:strokeWidth="0dp">
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp">
 
-                <!-- Header -->
+                <!-- Draggable Header -->
                 <RelativeLayout
+                    android:id="@+id/layoutHeader"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
+                    android:layout_height="36dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="?attr/selectableItemBackground">
 
-                    <TextView
-                        android:id="@+id/txtPanelAppTitle"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:text="Ins Translator to Phyll"
-                        android:textColor="?attr/overlayTextColor"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <ImageButton
-                        android:id="@+id/btnSettings"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_toStartOf="@+id/btnCollapse"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="4dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Settings"
-                        android:src="@drawable/ic_settings"
-                        app:tint="?attr/overlayIconTint" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:text="⠿"
+                            android:textColor="?attr/overlayTextSecondaryColor"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-                    <ImageButton
-                        android:id="@+id/btnCollapse"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        <TextView
+                            android:id="@+id/txtPanelAppTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ins Translator to Phyll"
+                            android:textColor="?attr/overlayTextColor"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:contentDescription="Collapse"
-                        android:src="@drawable/ic_close"
-                        app:tint="?attr/overlayIconTint" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnSettings"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginEnd="2dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Settings"
+                            android:src="@drawable/ic_settings"
+                            app:tint="?attr/overlayIconTint" />
+
+                        <ImageButton
+                            android:id="@+id/btnCollapse"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="Collapse"
+                            android:src="@drawable/ic_close"
+                            app:tint="?attr/overlayIconTint" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
 
-                <!-- Mode toggle: Dịch đến / Dịch đi -->
+                <!-- Top Row: Mode Toggle & Persona Style -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="@drawable/bg_toggle_track"
-                    android:orientation="horizontal"
-                    android:padding="3dp">
-
-                    <TextView
-                        android:id="@+id/tabIncoming"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_toggle_selected"
-                        android:gravity="center"
-                        android:text="Dịch đến"
-                        android:textColor="@color/on_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tabOutgoing"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Dịch đi"
-                        android:textColor="?attr/overlayTextSecondaryColor"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- Style Persona Selector -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="34dp"
                     android:layout_marginBottom="8dp"
-                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="Văn phong AI:"
-                        android:textColor="?attr/overlayTextColor"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                    <!-- Mode Toggle: Dịch đến / Dịch đi -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"
+                        android:background="@drawable/bg_toggle_track"
+                        android:orientation="horizontal"
+                        android:padding="2dp">
 
+                        <TextView
+                            android:id="@+id/tabIncoming"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_toggle_selected"
+                            android:gravity="center"
+                            android:text="📥 Tin đến"
+                            android:textColor="@color/on_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tabOutgoing"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="📤 Tin đi"
+                            android:textColor="?attr/overlayTextSecondaryColor"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Persona Selector -->
                     <Spinner
                         android:id="@+id/spinnerPersonaStyle"
                         android:layout_width="0dp"
-                        android:layout_height="36dp"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="0.9"
                         android:background="@drawable/bg_input"
-                        android:paddingHorizontal="8dp" />
+                        android:paddingHorizontal="6dp" />
 
                 </LinearLayout>
 
-                <!-- Source text input -->
+                <!-- Source text input with compact utility buttons -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="8dp">
 
                     <EditText
                         android:id="@+id/inputSource"
@@ -148,13 +166,13 @@
                         android:gravity="top"
                         android:hint="Dán hoặc nhập tin nhắn..."
                         android:inputType="textMultiLine"
-                        android:maxLines="6"
-                        android:minLines="3"
-                        android:padding="12dp"
-                        android:paddingEnd="120dp"
+                        android:maxLines="4"
+                        android:minLines="2"
+                        android:padding="10dp"
+                        android:paddingEnd="106dp"
                         android:textColor="?attr/overlayTextColor"
                         android:textColorHint="?attr/overlayTextSecondaryColor"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
 
                     <!-- Quick OCR Camera, Voice Mic & Audio TTS for Source -->
                     <LinearLayout
@@ -162,160 +180,153 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentTop="true"
-                        android:layout_margin="8dp"
+                        android:layout_margin="6dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnCropScan"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
-                            android:layout_marginEnd="4dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginEnd="3dp"
                             android:insetLeft="0dp"
                             android:insetTop="0dp"
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:padding="0dp"
                             android:text="📸"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnMic"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
-                            android:layout_marginEnd="4dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginEnd="3dp"
                             android:insetLeft="0dp"
                             android:insetTop="0dp"
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:padding="0dp"
                             android:text="🎙"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSpeakSource"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:insetLeft="0dp"
                             android:insetTop="0dp"
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:padding="0dp"
                             android:text="🔊"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
                 </RelativeLayout>
 
-                <!-- 2-Column Grid for Languages and Action Buttons (Matching Mockup) -->
+                <!-- Language Selectors & Action Buttons Row (Compact Single Row) -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:baselineAligned="false"
+                    android:layout_height="38dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <!-- Left Column: Language Selectors -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:orientation="vertical">
-
-                        <!-- Source Language -->
-                        <TextView
-                            android:id="@+id/txtSourceLangLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="2dp"
-                            android:text="Ngôn ngữ nguồn"
-                            android:textColor="?attr/overlayTextColor"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <AutoCompleteTextView
-                            android:id="@+id/langSourceSelector"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginBottom="8dp"
-                            android:background="@drawable/bg_input"
-                            android:completionThreshold="1"
-                            android:hint="Auto Detect"
-                            android:paddingHorizontal="10dp"
-                            android:singleLine="true"
-                            android:textColor="?attr/overlayTextColor"
-                            android:textColorHint="?attr/overlayTextSecondaryColor"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <!-- Target Language -->
-                        <TextView
-                            android:id="@+id/txtLangLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="2dp"
-                            android:text="Ngôn ngữ đích"
-                            android:textColor="?attr/overlayTextColor"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
-
-                        <AutoCompleteTextView
-                            android:id="@+id/langSelector"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:background="@drawable/bg_input"
-                            android:completionThreshold="1"
-                            android:hint="Tìm ngôn ngữ..."
-                            android:paddingHorizontal="10dp"
-                            android:singleLine="true"
-                            android:textColor="?attr/overlayTextColor"
-                            android:textColorHint="?attr/overlayTextSecondaryColor"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
-
-                    <!-- Right Column: Action Buttons -->
-                    <LinearLayout
+                    <!-- Source Language -->
+                    <AutoCompleteTextView
+                        android:id="@+id/langSourceSelector"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:gravity="bottom"
-                        android:orientation="vertical">
+                        android:background="@drawable/bg_input"
+                        android:completionThreshold="1"
+                        android:hint="Auto Detect"
+                        android:paddingHorizontal="8dp"
+                        android:singleLine="true"
+                        android:textColor="?attr/overlayTextColor"
+                        android:textColorHint="?attr/overlayTextSecondaryColor"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnTranslate"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:layout_marginBottom="8dp"
-                            android:text="Dịch"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="4dp"
+                        android:text="➔"
+                        android:textColor="?attr/overlayTextSecondaryColor"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnPaste"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="44dp"
-                            android:text="Paste &amp; Dịch"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                    <!-- Target Language -->
+                    <AutoCompleteTextView
+                        android:id="@+id/langSelector"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_input"
+                        android:completionThreshold="1"
+                        android:hint="Ngôn ngữ đích"
+                        android:paddingHorizontal="8dp"
+                        android:singleLine="true"
+                        android:textColor="?attr/overlayTextColor"
+                        android:textColorHint="?attr/overlayTextSecondaryColor"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                    </LinearLayout>
+                    <!-- Quick Translate Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTranslate"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="6dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="⚡ Dịch"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <!-- Paste & Translate Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPaste"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="📋 Dán"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
+
+                <!-- Hidden stubs for labels to keep full backward compatibility -->
+                <TextView
+                    android:id="@+id/txtSourceLangLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txtLangLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
 
                 <!-- Progress Bar -->
                 <ProgressBar
                     android:id="@+id/progressBar"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
+                    android:layout_marginVertical="4dp"
                     android:visibility="gone" />
 
                 <!-- Error text -->
@@ -323,9 +334,9 @@
                     android:id="@+id/txtError"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="6dp"
                     android:textColor="@color/error"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
 
@@ -333,7 +344,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="6dp">
 
                     <TextView
                         android:id="@+id/txtResult"
@@ -341,11 +352,11 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_result"
                         android:minLines="2"
-                        android:padding="12dp"
-                        android:paddingEnd="88dp"
+                        android:padding="10dp"
+                        android:paddingEnd="76dp"
                         android:textColor="?attr/overlayTextColor"
                         android:textIsSelectable="true"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -353,45 +364,45 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentTop="true"
-                        android:layout_margin="8dp"
+                        android:layout_margin="6dp"
                         android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnEvalSpeech"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
-                            android:layout_marginEnd="4dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginEnd="3dp"
                             android:insetLeft="0dp"
                             android:insetTop="0dp"
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:padding="0dp"
                             android:text="🎯"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSpeakResult"
                             style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="38dp"
-                            android:layout_height="38dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:insetLeft="0dp"
                             android:insetTop="0dp"
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:padding="0dp"
                             android:text="🔊"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
                 </RelativeLayout>
 
-                <!-- Action buttons under result: Bookmark ⭐ & Copy -->
+                <!-- Actions under result: Bookmark ⭐ & Copy -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="6dp"
                     android:gravity="end"
                     android:orientation="horizontal">
 
@@ -399,44 +410,54 @@
                         android:id="@+id/btnBookmark"
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="⭐ Lưu từ vựng"
-                        android:textSize="13sp"
+                        android:layout_height="34dp"
+                        android:layout_marginEnd="6dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="⭐ Lưu từ"
+                        android:textSize="12sp"
                         android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCopy"
                         style="@style/Widget.Material3.Button.TonalButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Copy bản dịch"
-                        android:textSize="13sp"
+                        android:layout_height="34dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="10dp"
+                        android:text="📋 Copy"
+                        android:textSize="12sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
 
-                <!-- Phân tích câu Section (Matching Mockup) -->
+                <!-- Collapsible Grammar Analysis Section -->
                 <TextView
                     android:id="@+id/lblAnalysisHeader"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="Phân tích câu:"
-                    android:textColor="?attr/overlayTextColor"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="2dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingVertical="4dp"
+                    android:text="💡 Xem giải thích &amp; ngữ pháp ▼"
+                    android:textColor="?attr/overlayTextSecondaryColor"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/txtAnalysis"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:background="@drawable/bg_input"
-                    android:minLines="3"
-                    android:padding="12dp"
+                    android:padding="10dp"
                     android:textColor="?attr/overlayTextColor"
                     android:textIsSelectable="true"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

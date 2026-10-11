@@ -41,6 +41,12 @@ data class GeminiModel(
 
 class GeminiClient {
 
+    private val translationCache = object : LinkedHashMap<String, TranslationResult>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, TranslationResult>?): Boolean {
+            return size > 150
+        }
+    }
+
     suspend fun translate(
         text: String,
         targetLang: String,
@@ -50,10 +56,17 @@ class GeminiClient {
         isOutgoingMode: Boolean = false,
         sourceLang: String = "Auto Detect",
         personaStyle: String = "Mặc định",
-        recentHistory: List<HistoryItem> = emptyList()
+        recentHistory: List<HistoryItem> = emptyList(),
+        fastMode: Boolean = true
     ): TranslationResult = withContext(Dispatchers.IO) {
-        if (text.isBlank()) return@withContext TranslationResult("", "", "", "")
+        val trimmedText = text.trim()
+        if (trimmedText.isBlank()) return@withContext TranslationResult("", "", "", "")
         if (apiKey.isBlank()) throw GeminiException("API key is not configured. Open Settings to enter your Gemini API key.")
+
+        val cacheKey = "$trimmedText|$sourceLang|$targetLang|$isOutgoingMode|$personaStyle|$fastMode"
+        synchronized(translationCache) {
+            translationCache[cacheKey]?.let { return@withContext it }
+        }
 
         val langDirection = if (sourceLang.isNotBlank() && sourceLang != "Auto Detect") {
             "Translate from $sourceLang to $targetLang."
@@ -76,16 +89,8 @@ class GeminiClient {
         }
 
         val promptLines = mutableListOf(
-            "You are a real-time chat translation engine and expert AI language tutor.",
-            modeInstruction,
-            "Provide strict JSON containing:",
-            "1. 'detectedLang': detected or confirmed source language name.",
-            "2. 'translation': pure natural translated text in $targetLang, maintaining 100% pronoun consistency and context continuity with previous turns.",
-            "3. 'phonetics': pronunciation / IPA / pinyin / romaji reading guide.",
-            "4. 'analysis': a professional, comprehensive language learning breakdown formatted in clear Vietnamese with line breaks and bullet points, containing:",
-            "   • PHÂN TÍCH & TÁCH TỪ (Word-by-word segmentation with reading/pronunciation and exact meaning)",
-            "   • CẤU TRÚC CÂU & NGỮ PHÁP (Grammar patterns and sentence structure breakdown)",
-            "   • SO SÁNH CÂU GỐC & CÂU DỊCH (Direct comparison explaining nuances, tone, or word choice differences)"
+            "You are a real-time conversational chat translator.",
+            modeInstruction
         )
 
         if (personaPrompt.isNotBlank()) {
@@ -93,40 +98,47 @@ class GeminiClient {
         }
 
         if (styleInstruction.isNotBlank()) {
-            promptLines.add(
-                "Follow these additional custom style/tone instructions: ${styleInstruction.trim()}"
-            )
+            promptLines.add("Follow these additional custom style/tone instructions: ${styleInstruction.trim()}")
         }
 
         if (recentHistory.isNotEmpty()) {
-            val historyLines = recentHistory.reversed().mapIndexed { index, item ->
+            val historyLines = recentHistory.reversed().takeLast(3).mapIndexed { index, item ->
                 val role = if (item.isOutgoing) "Tin nhắn đi (User)" else "Tin nhắn đến (Sender)"
                 "  Lượt ${index + 1} [$role]: \"${item.sourceText}\" ➔ Bản dịch: \"${item.translation}\""
             }.joinToString("\n")
 
-            promptLines.add(
-                """
-                LỊCH SỬ HỘI THOẠI TRƯỚC ĐÓ (Dùng làm ngữ cảnh bắt buộc để chọn xưng hô phù hợp, nhất quán mối quan hệ và chủ đề):
-                $historyLines
-                """.trimIndent()
+            promptLines.add("LỊCH SỬ HỘI THOẠI TRƯỚC ĐÓ ĐỂ GIỮ VAI XƯNG HÔ:\n$historyLines")
+        }
+
+        if (fastMode) {
+            promptLines.addAll(
+                listOf(
+                    "FAST REAL-TIME TRANSLATION: Respond with STRICT JSON only, no extra text, no markdown outside JSON, no code fences. Shape:",
+                    """{"detectedLang":"<language name>","translation":"<pure natural translated text>","phonetics":"<short pronunciation guide or empty>","analysis":"<one brief sentence in Vietnamese if any key nuance, or empty>"}""",
+                    "TEXT:",
+                    "```",
+                    trimmedText,
+                    "```"
+                )
+            )
+        } else {
+            promptLines.addAll(
+                listOf(
+                    "Provide comprehensive language learning breakdown formatted in clear Vietnamese with line breaks:",
+                    """{"detectedLang":"<language name>","translation":"<translated text>","phonetics":"<pronunciation guide>","analysis":"<detailed Vietnamese analysis: word segmentation, grammar, usage notes>"}""",
+                    "TEXT:",
+                    "```",
+                    trimmedText,
+                    "```"
+                )
             )
         }
 
-        promptLines.addAll(
-            listOf(
-                "Respond with STRICT JSON only, no markdown formatting outside JSON, no code fences, in exactly this shape:",
-                """{"detectedLang":"<language name>","translation":"<translated text>","phonetics":"<pronunciation guide>","analysis":"<detailed Vietnamese analysis>"}""",
-                "TEXT:",
-                "```",
-                text,
-                "```"
-            )
-        )
-
         val prompt = promptLines.joinToString("\n")
-        val raw = callGemini(prompt, apiKey, model)
+        val maxTokens = if (fastMode) 512 else 1024
+        val raw = callGemini(prompt, apiKey, model, maxTokens = maxTokens, disableThinking = true)
 
-        try {
+        val result = try {
             val cleaned = raw.replace("```json", "").replace("```", "").trim()
             val json = JSONObject(cleaned)
             TranslationResult(
@@ -137,6 +149,44 @@ class GeminiClient {
             )
         } catch (e: Exception) {
             TranslationResult(detectedLang = "?", translation = raw.trim(), phonetics = "", analysis = "")
+        }
+
+        if (result.translation.isNotEmpty()) {
+            synchronized(translationCache) {
+                translationCache[cacheKey] = result
+            }
+        }
+        result
+    }
+
+    suspend fun analyzeGrammar(
+        text: String,
+        translation: String,
+        targetLang: String,
+        apiKey: String,
+        model: String
+    ): String = withContext(Dispatchers.IO) {
+        if (text.isBlank() || translation.isBlank() || apiKey.isBlank()) return@withContext ""
+        val prompt = """
+            You are an expert language teacher. Analyze this translation for a Vietnamese learner:
+            Original text: "$text"
+            Translation in $targetLang: "$translation"
+
+            Provide a clear, concise Vietnamese breakdown formatted with bullet points:
+            • 📚 TÁCH TỪ & PHIÊN ÂM (Word segmentation, pronunciation & meaning)
+            • 📐 CẤU TRÚC NGỮ PHÁP (Key grammar rule)
+            • 💡 MẸO & NGỮ CẢNH (Contextual usage tips)
+
+            Respond with strict JSON ONLY:
+            {"analysis":"<formatted Vietnamese breakdown with newlines>"}
+        """.trimIndent()
+        val raw = callGemini(prompt, apiKey, model, maxTokens = 600, disableThinking = false)
+        try {
+            val cleaned = raw.replace("```json", "").replace("```", "").trim()
+            val json = JSONObject(cleaned)
+            json.optString("analysis", raw).replace("\\n", "\n")
+        } catch (_: Exception) {
+            raw.replace("```json", "").replace("```", "").replace("\\n", "\n").trim()
         }
     }
 
@@ -404,12 +454,29 @@ class GeminiClient {
         models
     }
 
-    private fun callGemini(prompt: String, apiKey: String, model: String): String {
+    private fun callGemini(
+        prompt: String,
+        apiKey: String,
+        model: String,
+        maxTokens: Int = 1024,
+        disableThinking: Boolean = true
+    ): String {
         val encodedModel = URLEncoder.encode(model, "UTF-8")
         val encodedKey = URLEncoder.encode(apiKey, "UTF-8")
         val url = URL(
             "https://generativelanguage.googleapis.com/v1beta/models/$encodedModel:generateContent?key=$encodedKey"
         )
+
+        val genConfig = JSONObject().apply {
+            put("temperature", 0.1)
+            put("maxOutputTokens", maxTokens)
+            put("responseMimeType", "application/json")
+            if (disableThinking && (model.contains("2.5") || model.contains("thinking"))) {
+                put("thinkingConfig", JSONObject().apply {
+                    put("thinkingBudget", 0)
+                })
+            }
+        }
 
         val requestBody = JSONObject().apply {
             put("contents", JSONArray().put(
@@ -418,17 +485,14 @@ class GeminiClient {
                     put("parts", JSONArray().put(JSONObject().put("text", prompt)))
                 }
             ))
-            put("generationConfig", JSONObject().apply {
-                put("temperature", 0.3)
-                put("responseMimeType", "application/json")
-            })
+            put("generationConfig", genConfig)
         }
 
         val conn = url.openConnection() as HttpURLConnection
         conn.requestMethod = "POST"
         conn.setRequestProperty("Content-Type", "application/json")
-        conn.connectTimeout = 30_000
-        conn.readTimeout = 60_000
+        conn.connectTimeout = 15_000
+        conn.readTimeout = 30_000
         conn.doOutput = true
 
         try {
@@ -465,6 +529,17 @@ class GeminiClient {
             "https://generativelanguage.googleapis.com/v1beta/models/$encodedModel:generateContent?key=$encodedKey"
         )
 
+        val genConfig = JSONObject().apply {
+            put("temperature", 0.1)
+            put("maxOutputTokens", 1024)
+            put("responseMimeType", "application/json")
+            if (model.contains("2.5") || model.contains("thinking")) {
+                put("thinkingConfig", JSONObject().apply {
+                    put("thinkingBudget", 0)
+                })
+            }
+        }
+
         val requestBody = JSONObject().apply {
             put("contents", JSONArray().put(
                 JSONObject().apply {
@@ -480,10 +555,7 @@ class GeminiClient {
                     })
                 }
             ))
-            put("generationConfig", JSONObject().apply {
-                put("temperature", 0.3)
-                put("responseMimeType", "application/json")
-            })
+            put("generationConfig", genConfig)
         }
 
         val conn = url.openConnection() as HttpURLConnection

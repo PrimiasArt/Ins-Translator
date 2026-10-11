@@ -10,7 +10,7 @@
 ---
 
 ## 🌟 Tính Năng Mới Trên v4.5
-- ⚡ **Dịch siêu tốc (< 1s)**: Tối ưu Gemini 2.5 Flash tắt thinking latency, prompt tinh gọn, in-memory cache phản hồi tức thì.
+- ⚡ **Dịch siêu tốc (< 1s)**: Hỗ trợ và tối ưu mô hình thế hệ mới **Gemini 3.8 Flash** (`thinkingLevel: low`) & Gemini 2.5 Flash (`thinkingBudget: 0`), triệt tiêu độ trễ suy nghĩ ngầm, prompt tinh gọn, in-memory cache phản hồi tức thì.
 - 🫧 **Thẻ dịch nổi gọn nhẹ (Floating Compact Card)**: Không làm tối màn hình (`FLAG_DIM_BEHIND` removed), nhìn rõ 100% ứng dụng chat bên dưới.
 - ⠿ **Kéo thả di chuyển tự do**: Vuốt thanh tiêu đề để di chuyển thẻ dịch tránh che ô nhập hay tin nhắn.
 - 💡 **Phân tích ngữ pháp thu gọn/mở rộng**: Gập gọn phân tích để màn hình thoáng đãng, chỉ mở ra khi muốn học ngữ pháp.

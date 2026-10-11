@@ -287,7 +287,7 @@ class SettingsStore(context: Context) {
         private const val KEY_HISTORY_LIST = "savedHistoryList"
         private const val KEY_FLASHCARD_LIST = "savedFlashcardList"
 
-        const val DEFAULT_MODEL = "gemini-2.5-flash"
+        const val DEFAULT_MODEL = "gemini-3.8-flash"
         const val DEFAULT_COLOR = "#405DE6"
         const val DEFAULT_OPACITY = 0.95f
 

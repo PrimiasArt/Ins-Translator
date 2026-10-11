@@ -471,11 +471,7 @@ class GeminiClient {
             put("temperature", 0.1)
             put("maxOutputTokens", maxTokens)
             put("responseMimeType", "application/json")
-            if (disableThinking && (model.contains("2.5") || model.contains("thinking"))) {
-                put("thinkingConfig", JSONObject().apply {
-                    put("thinkingBudget", 0)
-                })
-            }
+            applyThinkingConfig(this, model, disableThinking)
         }
 
         val requestBody = JSONObject().apply {
@@ -533,11 +529,7 @@ class GeminiClient {
             put("temperature", 0.1)
             put("maxOutputTokens", 1024)
             put("responseMimeType", "application/json")
-            if (model.contains("2.5") || model.contains("thinking")) {
-                put("thinkingConfig", JSONObject().apply {
-                    put("thinkingBudget", 0)
-                })
-            }
+            applyThinkingConfig(this, model, disableThinking = true)
         }
 
         val requestBody = JSONObject().apply {
@@ -589,6 +581,26 @@ class GeminiClient {
             return sb.toString()
         } finally {
             conn.disconnect()
+        }
+    }
+
+    private fun applyThinkingConfig(genConfig: JSONObject, model: String, disableThinking: Boolean) {
+        if (!disableThinking) return
+        val m = model.lowercase()
+        when {
+            // Gemini 3.x models (e.g. gemini-3.8-flash, gemini-3.7-flash, gemini-3.5-flash)
+            // Sets thinkingLevel to "low" to minimize latency and avoid reasoning delays
+            m.contains("3.") || m.contains("gemini-3") -> {
+                genConfig.put("thinkingConfig", JSONObject().apply {
+                    put("thinkingLevel", "low")
+                })
+            }
+            // Gemini 2.5 models
+            m.contains("2.5") || m.contains("thinking") -> {
+                genConfig.put("thinkingConfig", JSONObject().apply {
+                    put("thinkingBudget", 0)
+                })
+            }
         }
     }
 

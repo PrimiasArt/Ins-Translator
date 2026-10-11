@@ -1,6 +1,6 @@
-# 🚀 Ins Translator to Phyll v4.4
+# 🚀 Ins Translator to Phyll v4.5
 
-> **Hệ sinh thái AI Translation & Language Learning** tích hợp Bong bóng trợ lý nổi (*Floating Bubble*), Thanh phụ đề ngang kính mờ (*Glass Subtitle Bar*), Sổ tay từ vựng *SRS Flashcards* và *AI Tutor Chat* song ngữ chuyên sâu (Đặc biệt tối ưu cho Tiếng Thái 🇹🇭).
+> **Hệ sinh thái AI Translation & Language Learning** tích hợp Bong bóng trợ lý nổi (*Floating Bubble*), Thẻ dịch nổi thu gọn (*Draggable Floating Card*), Thanh phụ đề ngang kính mờ (*Glass Subtitle Bar*), Sổ tay từ vựng *SRS Flashcards* và *AI Tutor Chat* song ngữ chuyên sâu (Đặc biệt tối ưu cho Tiếng Thái 🇹🇭).
 
 ![Platform](https://img.shields.io/badge/Platform-Android-green.svg)
 ![SDK](https://img.shields.io/badge/Target%20SDK-34-blue.svg)
@@ -9,11 +9,19 @@
 
 ---
 
-## 🌟 Tính Năng Nổi Bật
+## 🌟 Tính Năng Mới Trên v4.5
+- ⚡ **Dịch siêu tốc (< 1s)**: Tối ưu Gemini 2.5 Flash tắt thinking latency, prompt tinh gọn, in-memory cache phản hồi tức thì.
+- 🫧 **Thẻ dịch nổi gọn nhẹ (Floating Compact Card)**: Không làm tối màn hình (`FLAG_DIM_BEHIND` removed), nhìn rõ 100% ứng dụng chat bên dưới.
+- ⠿ **Kéo thả di chuyển tự do**: Vuốt thanh tiêu đề để di chuyển thẻ dịch tránh che ô nhập hay tin nhắn.
+- 💡 **Phân tích ngữ pháp thu gọn/mở rộng**: Gập gọn phân tích để màn hình thoáng đãng, chỉ mở ra khi muốn học ngữ pháp.
+
+---
+
+## 🌟 Tính Năng Cốt Lõi
 
 ### 1. 🫧 Bong bóng nổi & Thanh phụ đề ngang (Floating Overlays)
 - **Bong bóng nổi (Floating Bubble)**: Luôn hiển thị trên màn hình mọi ứng dụng (Instagram, Line, Messenger, v.v.), kéo thả mượt mà, chạm để mở bảng dịch nhanh 2 chiều (Tin đến / Tin đi).
-- **Thanh phụ đề kính mờ (Glass Subtitle Bar v4.4)**: Thiết kế dạng thanh ngang kính mờ đè phía trên bàn phím/ô chat, cho phép dán và dịch tức thì, tự động copy kết quả vào clipboard hoặc thay thế trực tiếp vào ô nhập.
+- **Thanh phụ đề kính mờ (Glass Subtitle Bar)**: Thiết kế dạng thanh ngang kính mờ đè phía trên bàn phím/ô chat, cho phép dán và dịch tức thì, tự động copy kết quả vào clipboard hoặc thay thế trực tiếp vào ô nhập.
 
 ### 2. 🧠 Động cơ AI Gemini thông minh
 - **Duy trì ngữ cảnh & Vai xưng hô**: Tự động đưa lịch sử hội thoại gần nhất vào prompt để AI chọn đại từ xưng hô tự nhiên và nhất quán (anh/em/bạn,...).

@@ -57,8 +57,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.create_release == true)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v4.4' }}
-          name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'Ins Translator to Phyll v4.4' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v4.5' }}
+          name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'Ins Translator to Phyll v4.5' }}
           files: app/build/outputs/apk/debug/*.apk
           generate_release_notes: true
         env:

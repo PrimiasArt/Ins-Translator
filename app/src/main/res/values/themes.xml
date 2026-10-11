@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OverlayTranslator" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="android:statusBarColor">@color/primary_dark</item>
+
+        <item name="cardBackgroundColor">#FFFFFF</item>
+        <item name="inputBackgroundColor">#F4F6FB</item>
+        <item name="resultBackgroundColor">#EBF2FF</item>
+        <item name="toggleTrackColor">#E6E8EF</item>
+        <item name="overlayTextColor">#111111</item>
+        <item name="overlayTextSecondaryColor">#555555</item>
+        <item name="overlayIconTint">#111111</item>
+    </style>
+</resources>

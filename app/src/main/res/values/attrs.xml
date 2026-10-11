@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="cardBackgroundColor" format="color" />
+    <attr name="inputBackgroundColor" format="color" />
+    <attr name="resultBackgroundColor" format="color" />
+    <attr name="toggleTrackColor" format="color" />
+    <attr name="overlayTextColor" format="color" />
+    <attr name="overlayTextSecondaryColor" format="color" />
+    <attr name="overlayIconTint" format="color" />
+</resources>

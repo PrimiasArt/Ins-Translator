@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Translate icon centered in 108dp adaptive icon canvas (safe zone 24dp inset) -->
+    <group
+        android:translateX="30"
+        android:translateY="30">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M25.74,30.14l-5.08,-5.02 0.06,-0.06A35.04,35.04 0,0 0,28.14 12H34V8h-14V4H16v4H2v3.98h22.34C23.0,15.84 20.88,19.5 18,22.7 16.14,20.64 14.6,18.38 13.38,16h-4c1.46,3.26 3.46,6.34 5.96,9.12l-10.18,10.04L8,38l10,-10 6.22,6.22 1.52,-4.08zM37.0,20h-4L24,44h4l2.24,-6h9.5L42,44h4l-9.0,-24zM31.76,34l3.24,-8.66L38.24,34h-6.48z" />
+    </group>
+</vector>

@@ -35,6 +35,7 @@ import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
+import com.phyll.overlaytranslator.BuildConfig
 import com.phyll.overlaytranslator.MainActivity
 import com.phyll.overlaytranslator.R
 import com.phyll.overlaytranslator.SettingsActivity
@@ -538,6 +539,7 @@ class OverlayViewController(
     }
 
     private fun setupPanel(panel: View) {
+        panel.findViewById<TextView>(R.id.txtPanelAppTitle)?.text = "Ins Translator to Phyll v${BuildConfig.VERSION_NAME}"
         val btnCollapse = panel.findViewById<ImageButton>(R.id.btnCollapse)
         val btnSettings = panel.findViewById<ImageButton>(R.id.btnSettings)
         val inputSource = panel.findViewById<EditText>(R.id.inputSource)

@@ -15,9 +15,15 @@ android {
         versionName = "4.4"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     applicationVariants.all {
+        val variantName = name
         outputs.all {
-            (this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName = "Ins_Translator_to_Phyll_v4.4-debug.apk"
+            (this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName =
+                "Ins_Translator_to_Phyll_v${versionName}-${variantName}.apk"
         }
     }
 

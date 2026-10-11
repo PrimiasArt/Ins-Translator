@@ -108,6 +108,7 @@ class MainActivity : AppCompatActivity() {
         navFlashcards = findViewById(R.id.navFlashcards)
         navSettings = findViewById(R.id.navSettings)
         txtHeaderStreak = findViewById(R.id.txtHeaderStreak)
+        findViewById<TextView>(R.id.txtHeaderAppTitle)?.text = "Ins Translator to Phyll v${BuildConfig.VERSION_NAME}"
 
         setupNavigationLabels()
         setupNavigation()

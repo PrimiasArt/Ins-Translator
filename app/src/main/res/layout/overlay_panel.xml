@@ -38,11 +38,12 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/txtPanelAppTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:text="Ins Translator to Phyll v4.4"
+                        android:text="Ins Translator to Phyll"
                         android:textColor="?attr/overlayTextColor"
                         android:textSize="17sp"
                         android:textStyle="bold" />
